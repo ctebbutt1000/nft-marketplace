@@ -20,6 +20,8 @@ import {
   Divider,
   HStack,
   Image,
+  PinInput,
+  PinInputField,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { Elements, CardElement, useStripe, useElements, PaymentRequestButtonElement } from "@stripe/react-stripe-js";
@@ -58,11 +60,21 @@ function PaymentForm({ listing, onClose }: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const toast = useToast();
-  const { connectWithEmail, isConnected, address } = useInAppWallet();
+  const { 
+    sendVerificationCode, 
+    verifyAndConnect, 
+    resetVerification,
+    isVerificationSent, 
+    pendingEmail,
+    isConnected, 
+    address 
+  } = useInAppWallet();
   const { nftContract, type } = useMarketplaceContext();
   
   const [email, setEmail] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSendingCode, setIsSendingCode] = useState(false);
   const [paymentRequest, setPaymentRequest] = useState<any>(null);
   const [canMakePayment, setCanMakePayment] = useState(false);
 
@@ -88,11 +100,99 @@ function PaymentForm({ listing, onClose }: PaymentFormProps) {
       });
 
       pr.on('paymentmethod', async (ev) => {
-        await handlePayment(ev.paymentMethod.id, ev.payerEmail || email);
+        const userEmail = ev.payerEmail || email;
+        if (userEmail && !isConnected) {
+          try {
+            await sendVerificationCode(userEmail);
+            toast({
+              title: "Verification required",
+              description: "Please check your email for the verification code",
+              status: "info",
+              duration: 5000,
+              isClosable: true,
+            });
+            ev.complete('fail');
+            return;
+          } catch (error) {
+            ev.complete('fail');
+            return;
+          }
+        }
+        await handlePayment(ev.paymentMethod.id, userEmail);
         ev.complete('success');
       });
     }
-  }, [stripe, listing]);
+  }, [stripe, listing, email, isConnected]);
+
+  const handleSendVerificationCode = async () => {
+    if (!email) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    setIsSendingCode(true);
+    try {
+      await sendVerificationCode(email);
+      toast({
+        title: "Verification code sent",
+        description: "Please check your email for the verification code",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to send verification code",
+        description: error instanceof Error ? error.message : "An error occurred",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (!verificationCode || verificationCode.length !== 6) {
+      toast({
+        title: "Invalid code",
+        description: "Please enter the 6-digit verification code",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await verifyAndConnect(verificationCode);
+      toast({
+        title: "Wallet connected",
+        description: "Your in-app wallet has been created and connected",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Verification failed",
+        description: error instanceof Error ? error.message : "Invalid verification code",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handlePayment = async (paymentMethodId?: string, userEmail?: string) => {
     if (!stripe || !elements) return;
@@ -100,14 +200,13 @@ function PaymentForm({ listing, onClose }: PaymentFormProps) {
     setIsProcessing(true);
     
     try {
-      // Connect wallet if not connected
-      if (!isConnected && userEmail) {
-        await connectWithEmail(userEmail);
-      }
-
-      const finalEmail = userEmail || email;
+      const finalEmail = userEmail || pendingEmail || email;
       if (!finalEmail) {
         throw new Error("Email is required");
+      }
+
+      if (!isConnected) {
+        throw new Error("Please connect your wallet first");
       }
 
       // Create payment intent
@@ -189,7 +288,13 @@ function PaymentForm({ listing, onClose }: PaymentFormProps) {
   };
 
   const handleCardPayment = async () => {
-    await handlePayment(undefined, email);
+    await handlePayment();
+  };
+
+  const handleReset = () => {
+    resetVerification();
+    setEmail("");
+    setVerificationCode("");
   };
 
   return (
@@ -203,61 +308,130 @@ function PaymentForm({ listing, onClose }: PaymentFormProps) {
         </Text>
       </Box>
 
-      <FormControl>
-        <FormLabel>Email Address</FormLabel>
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
-          isRequired
-        />
-        <Text fontSize="sm" color="gray.500" mt={1}>
-          We'll create an in-app wallet for you using this email
-        </Text>
-      </FormControl>
-
-      {canMakePayment && paymentRequest && (
+      {!isVerificationSent && !isConnected && (
         <>
-          <Box width="100%">
-            <PaymentRequestButtonElement
-              options={{ paymentRequest }}
-              style={{
-                paymentRequestButton: {
-                  theme: 'dark',
-                  height: '48px',
-                },
-              }}
+          <FormControl>
+            <FormLabel>Email Address</FormLabel>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              isRequired
             />
-          </Box>
-          <HStack width="100%">
-            <Divider />
-            <Text fontSize="sm" color="gray.500">OR</Text>
-            <Divider />
-          </HStack>
+            <Text fontSize="sm" color="gray.500" mt={1}>
+              We'll create an in-app wallet for you using this email
+            </Text>
+          </FormControl>
+
+          <Button
+            colorScheme="purple"
+            onClick={handleSendVerificationCode}
+            isLoading={isSendingCode}
+            loadingText="Sending..."
+            isDisabled={!email}
+            width="100%"
+          >
+            Send Verification Code
+          </Button>
         </>
       )}
 
-      <Box width="100%" p={4} border="1px" borderColor="gray.200" borderRadius="md">
-        <CardElement options={CARD_ELEMENT_OPTIONS} />
-      </Box>
+      {isVerificationSent && !isConnected && (
+        <>
+          <Box textAlign="center">
+            <Text fontSize="md" mb={2}>
+              Verification code sent to:
+            </Text>
+            <Text fontSize="sm" color="purple.500" fontWeight="bold">
+              {pendingEmail}
+            </Text>
+          </Box>
 
-      <Button
-        colorScheme="purple"
-        size="lg"
-        width="100%"
-        onClick={handleCardPayment}
-        isLoading={isProcessing}
-        loadingText="Processing..."
-        isDisabled={!email || !stripe || !elements}
-      >
-        Pay with Card
-      </Button>
+          <FormControl>
+            <FormLabel>Enter 6-digit verification code</FormLabel>
+            <HStack justify="center">
+              <PinInput
+                value={verificationCode}
+                onChange={setVerificationCode}
+                size="lg"
+              >
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+              </PinInput>
+            </HStack>
+          </FormControl>
 
-      {isConnected && address && (
-        <Text fontSize="sm" color="green.500">
-          ✓ Wallet connected: {address.slice(0, 6)}...{address.slice(-4)}
-        </Text>
+          <VStack width="100%" spacing={3}>
+            <Button
+              colorScheme="purple"
+              onClick={handleVerifyCode}
+              isLoading={isProcessing}
+              loadingText="Verifying..."
+              isDisabled={verificationCode.length !== 6}
+              width="100%"
+            >
+              Verify & Connect Wallet
+            </Button>
+            
+            <Button
+              variant="ghost"
+              onClick={handleReset}
+              size="sm"
+            >
+              Use different email
+            </Button>
+          </VStack>
+        </>
+      )}
+
+      {isConnected && (
+        <>
+          <Text fontSize="sm" color="green.500" textAlign="center">
+            ✓ Wallet connected: {address?.slice(0, 6)}...{address?.slice(-4)}
+          </Text>
+
+          {canMakePayment && paymentRequest && (
+            <>
+              <Box width="100%">
+                <PaymentRequestButtonElement
+                  options={{ paymentRequest }}
+                  style={{
+                    paymentRequestButton: {
+                      theme: 'dark',
+                      height: '48px',
+                    },
+                  }}
+                />
+              </Box>
+              <HStack width="100%">
+                <Divider />
+                <Text fontSize="sm" color="gray.500">OR</Text>
+                <Divider />
+              </HStack>
+            </>
+          )}
+
+          <Box width="100%" p={4} border="1px" borderColor="gray.200" borderRadius="md">
+            <CardElement options={CARD_ELEMENT_OPTIONS} />
+          </Box>
+
+          <Button
+            colorScheme="purple"
+            size="lg"
+            width="100%"
+            onClick={handleCardPayment}
+            isLoading={isProcessing}
+            loadingText="Processing..."
+            isDisabled={!stripe || !elements}
+          >
+            Pay with Card
+          </Button>
+        </>
       )}
     </VStack>
   );
