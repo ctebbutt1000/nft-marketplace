@@ -1052,6 +1052,11 @@
   resolved "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-14.2.4.tgz"
   integrity sha512-8dwC0UJoc6fC7PX70csdaznVMNr16hQrTDAMPvLPloazlcaWfdPogq+UpZX6Drqb1OBlwowz8iG7WR0Tzk/diQ==
 
+"@next/swc-wasm-nodejs@^15.4.0":
+  version "15.4.0"
+  resolved "https://registry.npmjs.org/@next/swc-wasm-nodejs/-/swc-wasm-nodejs-15.4.0.tgz"
+  integrity sha512-o0B1ycSBwH+6Y7lsKLEbi88xbK8r7ptkt2WGHgQMLPL4mPvac6fxr2Xz1jhilHY4Z6UdxK5O77MvhphiywmzQg==
+
 "@noble/ciphers@1.2.1":
   version "1.2.1"
   resolved "https://registry.npmjs.org/@noble/ciphers/-/ciphers-1.2.1.tgz"
@@ -2921,6 +2926,9 @@ nanoid@^3.3.6, nanoid@^3.3.7:
   version "3.3.11"
   resolved "https://registry.npmjs.org/nanoid/-/nanoid-3.3.11.tgz"
   integrity sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==
+
+napi-wasm@^1.1.0:
+  version "1.1.0"
 
 next@14.2.4:
   version "14.2.4"

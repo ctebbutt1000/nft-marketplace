@@ -15,6 +15,8 @@
     "@chakra-ui/theme-tools": "^2.1.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@next/swc-wasm-nodejs": "^15.4.0",
+    "@stripe/stripe-js": "^4.4.0",
     "@tanstack/react-query": "^5.44.0",
     "blo": "^1.2.0",
     "framer-motion": "^11.2.10",
@@ -22,9 +24,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
-    "thirdweb": "^5.75.0",
-    "@stripe/stripe-js": "^4.4.0",
-    "stripe": "^16.12.0"
+    "stripe": "^16.12.0",
+    "thirdweb": "^5.75.0"
   },
   "devDependencies": {
     "@types/node": "^20",
