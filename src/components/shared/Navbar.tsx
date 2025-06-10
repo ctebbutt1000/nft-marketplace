@@ -46,11 +46,10 @@ export function Navbar() {
             fontWeight="extrabold"
           >
             {/* Replace this with your own branding */}
-            THIRDMART
+            TUNEX
           </Heading>
         </Box>
         <Box display={{ lg: "block", base: "none" }}>
-          <ToggleThemeButton />
           {account && wallet ? (
             <ProfileButton address={account.address} wallet={wallet} />
           ) : (
@@ -110,14 +109,5 @@ function ProfileButton({
         </MenuItem>
       </MenuList>
     </Menu>
-  );
-}
-
-function ToggleThemeButton() {
-  const { colorMode, toggleColorMode } = useColorMode();
-  return (
-    <Button height="56px" w="56px" onClick={toggleColorMode} mr="10px">
-      {colorMode === "light" ? <FaRegMoon /> : <IoSunny />}
-    </Button>
   );
 }

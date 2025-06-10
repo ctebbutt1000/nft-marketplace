@@ -283,10 +283,10 @@ function getExpiration(endTimeInSeconds: bigint) {
 
   // Format the future date
   const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "short",
     day: "numeric",
-    hour: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "numeric",
     timeZoneName: "short",
   };
   const formattedDate = futureDate.toLocaleDateString("en-US", options);

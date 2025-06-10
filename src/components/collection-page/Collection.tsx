@@ -76,8 +76,7 @@ export function Collection() {
                 {supplyInfo
                   ? `(${(
                       supplyInfo.endTokenId -
-                      supplyInfo.startTokenId +
-                      1n
+                      supplyInfo.startTokenId 
                     ).toString()})`
                   : ""}
               </Tab>
