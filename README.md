@@ -1,4 +1,3 @@
-
 <p align="center">
     <br />
     <a href="https://thirdweb.com">
@@ -6,14 +5,19 @@
     <br />
 </p>
 
-<h1 align="center"><a href='https://thirdweb.com/'>thirdweb</a> NFT Marketplace</h1>
+<h1 align="center"><a href='https://thirdweb.com/'>thirdweb</a> NFT Marketplace with Universal Bridge</h1>
 
-<p align="center"><strong>Build your own NFT Marketplace with thirdweb SDK</strong></p>
+<p align="center"><strong>Build your own NFT Marketplace with thirdweb SDK, Stripe payments, and Apple Pay</strong></p>
 
 ## Features
 - Support for multiple collections
 - Support for multiple chains
 - Create listings with custom payment currencies
+- **Credit/Debit Card payments via Stripe**
+- **Apple Pay integration**
+- **In-app wallet creation with email**
+- **ThirdWeb Engine for gasless transactions**
+- **Universal Bridge integration**
 - Public profile page: [vitalik.eth's Profile](https://marketplace.thirdweb-preview.com/profile/vitalik.eth)
 - _and [more to come](https://github.com/thirdweb-example/marketplace-template/issues?q=is%3Aissue+is%3Aopen+feature+request)_
 
@@ -40,9 +44,18 @@ pnpm install
 ### 3. Set up environment variables
 Create a file called `.env.local` (at the root level of your project) with the following content:
 ```
-NEXT_PUBLIC_TW_CLIENT_ID="<your-thirdweb-client-id"
+NEXT_PUBLIC_TW_CLIENT_ID="<your-thirdweb-client-id>"
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="<your-stripe-publishable-key>"
+STRIPE_SECRET_KEY="<your-stripe-secret-key>"
+THIRDWEB_ENGINE_URL="<your-thirdweb-engine-url>"
+THIRDWEB_ENGINE_ACCESS_TOKEN="<your-thirdweb-engine-access-token>"
+THIRDWEB_ENGINE_BACKEND_WALLET="<your-backend-wallet-address>"
 ```
-Don't have a thirdweb clientId? [Grab one now](https://thirdweb.com/dashboard/settings/api-keys). Make sure you set up the `Allowed Domains` properly. [Learn how](https://portal.thirdweb.com/account/api-keys)
+
+#### Required API Keys:
+- **ThirdWeb Client ID**: [Get one here](https://thirdweb.com/dashboard/settings/api-keys)
+- **Stripe Keys**: [Get them from Stripe Dashboard](https://dashboard.stripe.com/apikeys)
+- **ThirdWeb Engine**: [Set up Engine](https://portal.thirdweb.com/engine)
 
 ### 4. You're set
 You can now run the template in your local machine.
@@ -56,6 +69,36 @@ yarn dev
 # pnpm
 pnpm dev
 ```
+
+## New Payment Features
+
+### Credit Card & Apple Pay Integration
+- Users can purchase NFTs using credit/debit cards or Apple Pay
+- Stripe handles secure payment processing
+- Automatic wallet creation using email addresses
+- NFTs are transferred directly to user's in-app wallet after successful payment
+
+### In-App Wallets
+- Email-based wallet creation
+- No seed phrases or complex setup required
+- Seamless integration with existing thirdweb wallet infrastructure
+
+### ThirdWeb Engine Integration
+- All gas fees are covered by the marketplace
+- Automatic NFT transfers after successful payments
+- Support for both ERC721 and ERC1155 tokens
+
+### Universal Bridge
+- Integrated with ThirdWeb's Universal Bridge for cross-chain functionality
+- Seamless payment experience across different networks
+
+## How It Works
+
+1. **Browse & Select**: Users browse NFTs and click "Buy with Card"
+2. **Email Wallet**: Enter email to create/connect in-app wallet
+3. **Payment**: Pay with credit card or Apple Pay via Stripe
+4. **Transfer**: NFT is automatically transferred to user's wallet using ThirdWeb Engine
+5. **Complete**: User receives NFT in their in-app wallet
 
 ## Customize your marketplace
 
@@ -138,8 +181,9 @@ For help or feedback, please [visit our support site](https://thirdweb.com/suppo
 ## Additional Resources
 
 - [Documentation](https://portal.thirdweb.com/typescript/v5)
+- [ThirdWeb Universal Bridge](https://portal.thirdweb.com/pay)
+- [Stripe Documentation](https://stripe.com/docs)
 
 ## Security
 
 If you believe you have found a security vulnerability in any of our packages, we kindly ask you not to open a public issue; and to disclose this to us by emailing `security@thirdweb.com`.
-

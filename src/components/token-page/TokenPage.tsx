@@ -17,6 +17,7 @@ import {
   Th,
   Thead,
   Tr,
+  HStack,
 } from "@chakra-ui/react";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { balanceOf, getNFT as getERC1155 } from "thirdweb/extensions/erc1155";
@@ -33,6 +34,7 @@ import { useMarketplaceContext } from "@/hooks/useMarketplaceContext";
 import dynamic from "next/dynamic";
 import { NftDetails } from "./NftDetails";
 import RelatedListings from "./RelatedListings";
+import { BuyWithStripeButton } from "./BuyWithStripeButton";
 
 const CancelListingButton = dynamic(() => import("./CancelListingButton"), {
   ssr: false,
@@ -238,10 +240,13 @@ export function Token(props: Props) {
                                 {account && (
                                   <Td>
                                     {!listedByYou ? (
-                                      <BuyFromListingButton
-                                        account={account}
-                                        listing={item}
-                                      />
+                                      <HStack>
+                                        <BuyFromListingButton
+                                          account={account}
+                                          listing={item}
+                                        />
+                                        <BuyWithStripeButton listing={item} />
+                                      </HStack>
                                     ) : (
                                       <CancelListingButton
                                         account={account}
