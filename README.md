@@ -7,7 +7,7 @@
 
 <h1 align="center"><a href='https://thirdweb.com/'>thirdweb</a> NFT Marketplace with Universal Bridge</h1>
 
-<p align="center"><strong>Build your own NFT Marketplace with thirdweb SDK, Stripe payments, and Apple Pay</strong></p>
+<p align="center"><strong>Build your own NFT Marketplace with thirdweb SDK, Stripe payments, Apple Pay, and Universal Bridge</strong></p>
 
 ## Features
 - Support for multiple collections
@@ -15,9 +15,10 @@
 - Create listings with custom payment currencies
 - **Credit/Debit Card payments via Stripe**
 - **Apple Pay integration**
+- **ThirdWeb Universal Bridge integration**
 - **In-app wallet creation with email**
 - **ThirdWeb Engine for gasless transactions**
-- **Universal Bridge integration**
+- **Multiple payment options: Crypto, Credit Card, Apple Pay, and Universal Bridge**
 - Public profile page: [vitalik.eth's Profile](https://marketplace.thirdweb-preview.com/profile/vitalik.eth)
 - _and [more to come](https://github.com/thirdweb-example/marketplace-template/issues?q=is%3Aissue+is%3Aopen+feature+request)_
 
@@ -70,35 +71,67 @@ yarn dev
 pnpm dev
 ```
 
-## New Payment Features
+## Payment Options
 
-### Credit Card & Apple Pay Integration
+### 1. Traditional Crypto Payments
+- Direct wallet-to-wallet transactions
+- Support for multiple ERC20 tokens
+- Gas fees paid by buyer
+
+### 2. Credit Card & Apple Pay Integration (Stripe)
 - Users can purchase NFTs using credit/debit cards or Apple Pay
 - Stripe handles secure payment processing
 - Automatic wallet creation using email addresses
 - NFTs are transferred directly to user's in-app wallet after successful payment
 
+### 3. Universal Bridge Integration
+- **Cross-chain payments**: Buy NFTs on any chain using any supported token
+- **Fiat on-ramps**: Direct credit card to crypto conversion
+- **Multi-chain support**: Seamless transactions across different networks
+- **Gasless experience**: All gas fees covered by the marketplace
+- **Apple Pay support**: Native Apple Pay integration through Universal Bridge
+
 ### In-App Wallets
 - Email-based wallet creation
 - No seed phrases or complex setup required
 - Seamless integration with existing thirdweb wallet infrastructure
+- Works with all payment methods
 
 ### ThirdWeb Engine Integration
-- All gas fees are covered by the marketplace
+- All gas fees are covered by the marketplace for Stripe and Universal Bridge payments
 - Automatic NFT transfers after successful payments
 - Support for both ERC721 and ERC1155 tokens
 
-### Universal Bridge
-- Integrated with ThirdWeb's Universal Bridge for cross-chain functionality
-- Seamless payment experience across different networks
-
 ## How It Works
 
+### Traditional Crypto Purchase
+1. **Connect Wallet**: Users connect their existing crypto wallet
+2. **Browse & Select**: Browse NFTs and click "Buy"
+3. **Approve & Pay**: Approve token spending and complete transaction
+4. **Receive**: NFT is transferred to user's wallet
+
+### Credit Card/Apple Pay Purchase (Stripe)
 1. **Browse & Select**: Users browse NFTs and click "Buy with Card"
 2. **Email Wallet**: Enter email to create/connect in-app wallet
 3. **Payment**: Pay with credit card or Apple Pay via Stripe
 4. **Transfer**: NFT is automatically transferred to user's wallet using ThirdWeb Engine
 5. **Complete**: User receives NFT in their in-app wallet
+
+### Universal Bridge Purchase
+1. **Browse & Select**: Users browse NFTs and click "Buy with Bridge"
+2. **Email Wallet**: Enter email to create/connect in-app wallet (if needed)
+3. **Universal Payment**: Pay with any supported token, credit card, or Apple Pay
+4. **Cross-chain Magic**: Universal Bridge handles cross-chain conversion automatically
+5. **Transfer**: NFT is transferred to user's wallet with all gas fees covered
+6. **Complete**: User receives NFT regardless of payment method or chain
+
+## Universal Bridge Benefits
+
+- **Chain Abstraction**: Users don't need to worry about which chain the NFT is on
+- **Token Flexibility**: Pay with any supported cryptocurrency or fiat
+- **Simplified UX**: One payment flow for all scenarios
+- **Lower Barriers**: No need to hold specific tokens or manage gas fees
+- **Global Access**: Fiat on-ramps make NFTs accessible worldwide
 
 ## Customize your marketplace
 
@@ -174,6 +207,18 @@ export const SUPPORTED_TOKENS: SupportedTokens[] = [
 ```
 You have to prepare your own icon assets for each token in this list.
 
+## Webhook Configuration
+
+### Universal Bridge Webhooks
+To handle Universal Bridge payments, configure webhooks in your ThirdWeb dashboard:
+
+1. Go to your ThirdWeb dashboard
+2. Navigate to Pay settings
+3. Add webhook URL: `https://your-domain.com/api/bridge-webhook`
+4. Configure webhook events for payment completion
+
+The webhook will automatically handle NFT transfers when Universal Bridge payments are completed.
+
 ## Support
 
 For help or feedback, please [visit our support site](https://thirdweb.com/support)
@@ -183,6 +228,7 @@ For help or feedback, please [visit our support site](https://thirdweb.com/suppo
 - [Documentation](https://portal.thirdweb.com/typescript/v5)
 - [ThirdWeb Universal Bridge](https://portal.thirdweb.com/pay)
 - [Stripe Documentation](https://stripe.com/docs)
+- [ThirdWeb Pay Documentation](https://portal.thirdweb.com/pay)
 
 ## Security
 

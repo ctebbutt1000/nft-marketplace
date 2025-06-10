@@ -35,6 +35,7 @@ import dynamic from "next/dynamic";
 import { NftDetails } from "./NftDetails";
 import RelatedListings from "./RelatedListings";
 import { BuyWithStripeButton } from "./BuyWithStripeButton";
+import { BuyWithUniversalBridgeButton } from "./BuyWithUniversalBridgeButton";
 
 const CancelListingButton = dynamic(() => import("./CancelListingButton"), {
   ssr: false,
@@ -240,12 +241,13 @@ export function Token(props: Props) {
                                 {account && (
                                   <Td>
                                     {!listedByYou ? (
-                                      <HStack>
+                                      <HStack wrap="wrap" spacing={2}>
                                         <BuyFromListingButton
                                           account={account}
                                           listing={item}
                                         />
                                         <BuyWithStripeButton listing={item} />
+                                        <BuyWithUniversalBridgeButton listing={item} />
                                       </HStack>
                                     ) : (
                                       <CancelListingButton
