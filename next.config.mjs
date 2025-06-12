@@ -2,8 +2,12 @@
 const nextConfig = {
   experimental: {
     workerThreads: false,
-    cpus: 1
+    cpus: 1,
+    // Force use of WebAssembly SWC instead of native binary
+    swcMinify: false,
   },
+  // Force Next.js to use the WebAssembly version of SWC
+  swcMinify: false,
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
